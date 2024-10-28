@@ -955,17 +955,25 @@ namespace XIVSlothCombo.Combos.PvE
 
                 if (actionID is Iaijutsu)
                 {
-                    if (IsEnabled(CustomComboPreset.SAM_Iaijutsu_Shoha) &&
-                        ActionReady(Shoha) && gauge.MeditationStacks is 3 && CanWeave(actionID))
+                    bool canAddShoha = IsEnabled(CustomComboPreset.SAM_Iaijutsu_Shoha) &&
+                        ActionReady(Shoha) &&
+                        gauge.MeditationStacks is 3;
+
+                    if (canAddShoha && CanWeave(actionID))
                         return Shoha;
 
-                    if (IsEnabled(CustomComboPreset.SAM_Iaijutsu_OgiNamikiri) && 
-                        LevelChecked(OgiNamikiri) && HasEffect(Buffs.OgiNamikiriReady))
+                    if (IsEnabled(CustomComboPreset.SAM_Iaijutsu_OgiNamikiri) && (
+                        (LevelChecked(OgiNamikiri) && HasEffect(Buffs.OgiNamikiriReady)) ||
+                        gauge.Kaeshi == Kaeshi.NAMIKIRI))
                         return OriginalHook(OgiNamikiri);
 
-                    if (IsEnabled(CustomComboPreset.SAM_Iaijutsu_TsubameGaeshi) && 
-                        ((LevelChecked(TsubameGaeshi) && HasEffect(Buffs.TsubameReady)) || (LevelChecked(TendoKaeshiSetsugekka) && HasEffect(Buffs.TendoKaeshiSetsugekkaReady))))
+                    if (IsEnabled(CustomComboPreset.SAM_Iaijutsu_TsubameGaeshi) && (
+                        (LevelChecked(TsubameGaeshi) && (HasEffect(Buffs.TsubameReady) || HasEffect(Buffs.KaeshiGokenReady))) ||
+                        (LevelChecked(TendoKaeshiSetsugekka) && (HasEffect(Buffs.TendoKaeshiSetsugekkaReady) || HasEffect(Buffs.TendoKaeshiGokenReady)))))
                         return OriginalHook(TsubameGaeshi);
+
+                    if (canAddShoha)
+                        return Shoha;
                 }
                 return actionID;
             }
@@ -984,6 +992,9 @@ namespace XIVSlothCombo.Combos.PvE
                     if (IsEnabled(CustomComboPreset.SAM_Shinten_Shoha_Senei) &&
                         ActionReady(Senei))
                         return Senei;
+
+                    if (IsEnabled(CustomComboPreset.SAM_Shinten_Shoha_Zanshin) && HasEffect(Buffs.ZanshinReady))
+                        return Zanshin;
 
                     if (gauge.MeditationStacks is 3 && ActionReady(Shoha))
                         return Shoha;
@@ -1006,6 +1017,9 @@ namespace XIVSlothCombo.Combos.PvE
                         ActionReady(Guren))
                         return Guren;
 
+                    if (IsEnabled(CustomComboPreset.SAM_Kyuten_Shoha_Zanshin) && HasEffect(Buffs.ZanshinReady))
+                        return Zanshin;
+
                     if (gauge.MeditationStacks is 3 && ActionReady(Shoha))
                         return Shoha;
                 }
@@ -1024,6 +1038,12 @@ namespace XIVSlothCombo.Combos.PvE
 
                 if (actionID is Ikishoten)
                 {
+                    if (IsEnabled(CustomComboPreset.SAM_Ikishoten_OgiNamikiri_Shoha) &&
+                        LevelChecked(Shoha) &&
+                        HasEffect(Buffs.OgiNamikiriReady) &&
+                        gauge.MeditationStacks is 3)
+                        return Shoha;
+
                     if ((LevelChecked(OgiNamikiri) && HasEffect(Buffs.OgiNamikiriReady)) || gauge.Kaeshi == Kaeshi.NAMIKIRI)
                         return OriginalHook(OgiNamikiri);
                 }
